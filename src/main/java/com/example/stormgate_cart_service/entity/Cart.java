@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -119,12 +120,14 @@ public class Cart {
     }
 
     /**
-     * Gets a defensive copy of the items list.
+     * Gets the items list.
+     * Returns the actual list without defensive copying to allow JPA and tests to modify it.
+     * Defensive copying is applied only during construction and assignment.
      *
-     * @return defensive copy of items list
+     * @return items list
      */
     public List<CartItem> getItems() {
-        return items == null ? null : new ArrayList<>(items);
+        return items;
     }
 
     /**
@@ -133,7 +136,7 @@ public class Cart {
      * @param items the items to set
      */
     public void setItems(final List<CartItem> items) {
-        this.items = items == null ? null : new ArrayList<>(items);
+        this.items = items == null ? new ArrayList<>() : new ArrayList<>(items);
     }
 
     /**
