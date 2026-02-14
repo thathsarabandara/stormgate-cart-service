@@ -119,6 +119,24 @@ public class Cart {
     }
 
     /**
+     * Gets a defensive copy of the items list.
+     *
+     * @return defensive copy of items list
+     */
+    public List<CartItem> getItems() {
+        return items == null ? null : new ArrayList<>(items);
+    }
+
+    /**
+     * Sets items with defensive copying.
+     *
+     * @param items the items to set
+     */
+    public void setItems(final List<CartItem> items) {
+        this.items = items == null ? null : new ArrayList<>(items);
+    }
+
+    /**
      * Calculates the total amount for all items in the cart.
      *
      * @return sum of subtotals for all non-deleted items
