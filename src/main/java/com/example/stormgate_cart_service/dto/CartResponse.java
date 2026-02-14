@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,4 +58,22 @@ public class CartResponse {
      * Last update timestamp for the cart.
      */
     private LocalDateTime updatedAt;
+
+    /**
+     * Gets a defensive copy of the items list.
+     *
+     * @return defensive copy of items list
+     */
+    public List<CartItemResponse> getItems() {
+        return items == null ? null : new ArrayList<>(items);
+    }
+
+    /**
+     * Sets items with defensive copying.
+     *
+     * @param items the items to set
+     */
+    public void setItems(final List<CartItemResponse> items) {
+        this.items = items == null ? null : new ArrayList<>(items);
+    }
 }

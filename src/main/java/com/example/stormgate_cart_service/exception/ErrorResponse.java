@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -47,4 +48,22 @@ public class ErrorResponse {
      * Validation errors with field names as keys.
      */
     private Map<String, String> validationErrors;
+
+    /**
+     * Gets a defensive copy of the validation errors map.
+     *
+     * @return defensive copy of validation errors
+     */
+    public Map<String, String> getValidationErrors() {
+        return validationErrors == null ? null : new HashMap<>(validationErrors);
+    }
+
+    /**
+     * Sets validation errors with defensive copying.
+     *
+     * @param validationErrors the validation errors to set
+     */
+    public void setValidationErrors(final Map<String, String> validationErrors) {
+        this.validationErrors = validationErrors == null ? null : new HashMap<>(validationErrors);
+    }
 }

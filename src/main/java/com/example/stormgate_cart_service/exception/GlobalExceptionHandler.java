@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
             final CartNotFoundException ex,
             final WebRequest request) {
         log.error("Cart not found: {}", ex.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        final ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
                 .error("Not Found")
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
             final ItemNotFoundException ex,
             final WebRequest request) {
         log.error("Item not found: {}", ex.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        final ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
                 .error("Not Found")
@@ -76,12 +76,12 @@ public class GlobalExceptionHandler {
             final WebRequest request) {
         log.error("Validation error: {}", ex.getMessage());
 
-        Map<String, String> errors = new HashMap<>();
+        final Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage())
         );
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        final ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error("Bad Request")
@@ -104,7 +104,7 @@ public class GlobalExceptionHandler {
             final IllegalArgumentException ex,
             final WebRequest request) {
         log.error("Illegal argument: {}", ex.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        final ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error("Bad Request")
@@ -126,7 +126,7 @@ public class GlobalExceptionHandler {
             final Exception ex,
             final WebRequest request) {
         log.error("Unexpected error: {}", ex.getMessage(), ex);
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        final ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error("Internal Server Error")

@@ -110,14 +110,10 @@
 			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- Jackson for JSON processing -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
-
-		<!-- Mockito for mocking -->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
@@ -128,26 +124,20 @@
 			<artifactId>mockito-junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- H2 Database for testing -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- Servlet API for testing -->
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-core</artifactId>
 		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -210,7 +200,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.7.2</version>
+				<version>4.8.6.0</version>
 				<configuration>
 					<effort>Max</effort>
 					<threshold>Medium</threshold>
