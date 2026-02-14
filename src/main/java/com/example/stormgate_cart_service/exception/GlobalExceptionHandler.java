@@ -7,19 +7,29 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Global exception handler for handling application exceptions.
+ * Provides consistent error response format across all API endpoints.
+ */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
+    /**
+     * Handles CartNotFoundException.
+     *
+     * @param ex the exception
+     * @param request the web request
+     * @return error response entity
+     */
     @ExceptionHandler(CartNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCartNotFoundException(
-            CartNotFoundException ex,
-            WebRequest request) {
+            final CartNotFoundException ex,
+            final WebRequest request) {
         log.error("Cart not found: {}", ex.getMessage());
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -31,10 +41,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    /**
+     * Handles ItemNotFoundException.
+     *
+     * @param ex the exception
+     * @param request the web request
+     * @return error response entity
+     */
     @ExceptionHandler(ItemNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleItemNotFoundException(
-            ItemNotFoundException ex,
-            WebRequest request) {
+            final ItemNotFoundException ex,
+            final WebRequest request) {
         log.error("Item not found: {}", ex.getMessage());
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -46,10 +63,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    /**
+     * Handles validation exceptions from request binding.
+     *
+     * @param ex the exception
+     * @param request the web request
+     * @return error response entity with validation errors
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
-            MethodArgumentNotValidException ex,
-            WebRequest request) {
+            final MethodArgumentNotValidException ex,
+            final WebRequest request) {
         log.error("Validation error: {}", ex.getMessage());
 
         Map<String, String> errors = new HashMap<>();
@@ -68,10 +92,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * Handles IllegalArgumentException.
+     *
+     * @param ex the exception
+     * @param request the web request
+     * @return error response entity
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
-            IllegalArgumentException ex,
-            WebRequest request) {
+            final IllegalArgumentException ex,
+            final WebRequest request) {
         log.error("Illegal argument: {}", ex.getMessage());
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -83,10 +114,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * Handles all other exceptions.
+     *
+     * @param ex the exception
+     * @param request the web request
+     * @return error response entity
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(
-            Exception ex,
-            WebRequest request) {
+            final Exception ex,
+            final WebRequest request) {
         log.error("Unexpected error: {}", ex.getMessage(), ex);
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
