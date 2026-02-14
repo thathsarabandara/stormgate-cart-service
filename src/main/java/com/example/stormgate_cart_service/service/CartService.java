@@ -13,11 +13,15 @@ import com.example.stormgate_cart_service.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for cart operations.
+ * Handles business logic for cart management including adding, updating,
+ * and removing items.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -27,22 +31,33 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
 
     /**
-     * View cart for tenant and user
+     * Retrieves the shopping cart for a specific tenant and user.
+     *
+     * @param tenantId the tenant identifier
+     * @param userId the user identifier
+     * @return the cart response
+     * @throws CartNotFoundException if cart is not found
      */
-    public CartResponse getCart(String tenantId, String userId) {
+    public CartResponse getCart(final String tenantId, final String userId) {
         Cart cart = cartRepository.findByTenantIdAndUserId(tenantId, userId)
-                .orElseThrow(() -> new CartNotFoundException("Cart not found for tenant: " + tenantId + " and user: " + userId));
+                .orElseThrow(() -> new CartNotFoundException(
+                        "Cart not found for tenant: " + tenantId + " and user: " + userId));
 
         return mapToCartResponse(cart);
     }
 
     /**
-     * Add item to cart
+     * Adds an item to the shopping cart.
+     * If the product already exists, updates its quantity.
+     *
+     * @param tenantId the tenant identifier
+     * @param userId the user identifier
+     * @param request the add item request
+     * @return the updated cart response
      */
-    public CartResponse addItemToCart(AddItemRequest request) {
-        String tenantId = request.getTenantId();
-        String userId = request.getUserId();
-
+    public CartResponse addItemToCart(final String tenantId,
+                                     final String userId,
+                                     final AddItemRequest request) {
         // Check if cart exists, if not create one
         Cart cart = cartRepository.findByTenantIdAndUserId(tenantId, userId)
                 .orElseGet(() -> createNewCart(tenantId, userId));
@@ -71,7 +86,8 @@ public class CartService {
                     .name(request.getName())
                     .price(request.getPrice())
                     .quantity(request.getQuantity())
-                    .subtotal(request.getPrice().multiply(new BigDecimal(request.getQuantity())))
+                    .subtotal(request.getPrice()
+                            .multiply(new BigDecimal(request.getQuantity())))
                     .isDeleted(false)
                     .build();
             cart.getItems().add(newItem);
@@ -85,14 +101,29 @@ public class CartService {
     }
 
     /**
-     * Update item quantity in cart
+     * Updates the quantity of an item in the shopping cart.
+     *
+     * @param tenantId the tenant identifier
+     * @param userId the user identifier
+     * @param productId the product identifier
+     * @param request the update quantity request
+     * @return the updated cart response
+     * @throws CartNotFoundException if cart is not found
+     * @throws ItemNotFoundException if item is not found
      */
-    public CartResponse updateItemQuantity(String tenantId, String userId, String productId, UpdateQuantityRequest request) {
+    public CartResponse updateItemQuantity(final String tenantId,
+                                          final String userId,
+                                          final String productId,
+                                          final UpdateQuantityRequest request) {
         Cart cart = cartRepository.findByTenantIdAndUserId(tenantId, userId)
-                .orElseThrow(() -> new CartNotFoundException("Cart not found for tenant: " + tenantId + " and user: " + userId));
+                .orElseThrow(() -> new CartNotFoundException(
+                        "Cart not found for tenant: " + tenantId
+                                + " and user: " + userId));
 
-        CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getCartId(), productId)
-                .orElseThrow(() -> new ItemNotFoundException("Item not found in cart with productId: " + productId));
+        CartItem item = cartItemRepository.findByCartIdAndProductId(
+                cart.getCartId(), productId)
+                .orElseThrow(() -> new ItemNotFoundException(
+                        "Item not found in cart with productId: " + productId));
 
         item.setQuantity(request.getQuantity());
         cartItemRepository.save(item);
@@ -105,14 +136,27 @@ public class CartService {
     }
 
     /**
-     * Remove item from cart (soft delete)
+     * Removes an item from the cart using soft delete.
+     *
+     * @param tenantId the tenant identifier
+     * @param userId the user identifier
+     * @param productId the product identifier
+     * @return the updated cart response
+     * @throws CartNotFoundException if cart is not found
+     * @throws ItemNotFoundException if item is not found
      */
-    public CartResponse removeItemFromCart(String tenantId, String userId, String productId) {
+    public CartResponse removeItemFromCart(final String tenantId,
+                                          final String userId,
+                                          final String productId) {
         Cart cart = cartRepository.findByTenantIdAndUserId(tenantId, userId)
-                .orElseThrow(() -> new CartNotFoundException("Cart not found for tenant: " + tenantId + " and user: " + userId));
+                .orElseThrow(() -> new CartNotFoundException(
+                        "Cart not found for tenant: " + tenantId
+                                + " and user: " + userId));
 
-        CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getCartId(), productId)
-                .orElseThrow(() -> new ItemNotFoundException("Item not found in cart with productId: " + productId));
+        CartItem item = cartItemRepository.findByCartIdAndProductId(
+                cart.getCartId(), productId)
+                .orElseThrow(() -> new ItemNotFoundException(
+                        "Item not found in cart with productId: " + productId));
 
         item.setIsDeleted(true);
         cartItemRepository.save(item);
@@ -125,11 +169,17 @@ public class CartService {
     }
 
     /**
-     * Clear cart (soft delete all items)
+     * Clears all items from the cart using soft delete.
+     *
+     * @param tenantId the tenant identifier
+     * @param userId the user identifier
+     * @throws CartNotFoundException if cart is not found
      */
-    public void clearCart(String tenantId, String userId) {
+    public void clearCart(final String tenantId, final String userId) {
         Cart cart = cartRepository.findByTenantIdAndUserId(tenantId, userId)
-                .orElseThrow(() -> new CartNotFoundException("Cart not found for tenant: " + tenantId + " and user: " + userId));
+                .orElseThrow(() -> new CartNotFoundException(
+                        "Cart not found for tenant: " + tenantId
+                                + " and user: " + userId));
 
         cart.getItems().forEach(item -> item.setIsDeleted(true));
         updateCartTotals(cart);
@@ -137,9 +187,13 @@ public class CartService {
     }
 
     /**
-     * Helper method to create a new cart
+     * Helper method to create a new cart.
+     *
+     * @param tenantId the tenant identifier
+     * @param userId the user identifier
+     * @return the created cart
      */
-    private Cart createNewCart(String tenantId, String userId) {
+    private Cart createNewCart(final String tenantId, final String userId) {
         Cart cart = Cart.builder()
                 .tenantId(tenantId)
                 .userId(userId)
@@ -151,17 +205,22 @@ public class CartService {
     }
 
     /**
-     * Update cart totals
+     * Updates cart total amount based on items.
+     *
+     * @param cart the cart to update
      */
-    private void updateCartTotals(Cart cart) {
+    private void updateCartTotals(final Cart cart) {
         BigDecimal total = cart.calculateTotal();
         cart.setTotalAmount(total);
     }
 
     /**
-     * Map Cart entity to CartResponse DTO
+     * Maps Cart entity to CartResponse DTO.
+     *
+     * @param cart the cart entity
+     * @return the cart response
      */
-    private CartResponse mapToCartResponse(Cart cart) {
+    private CartResponse mapToCartResponse(final Cart cart) {
         List<CartItemResponse> items = cart.getItems().stream()
                 .filter(item -> !item.getIsDeleted())
                 .map(item -> CartItemResponse.builder()
