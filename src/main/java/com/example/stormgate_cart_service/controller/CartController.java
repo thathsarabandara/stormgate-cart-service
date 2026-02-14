@@ -51,7 +51,7 @@ public class CartController {
     public ResponseEntity<CartResponse> getCart(
             @RequestHeader(value = "X-Tenant-ID", required = true) final String tenantId,
             @RequestHeader(value = "X-User-ID", required = true) final String userId) {
-        CartResponse cart = cartService.getCart(tenantId, userId);
+        final CartResponse cart = cartService.getCart(tenantId, userId);
         return ResponseEntity.ok(cart);
     }
 
@@ -68,7 +68,7 @@ public class CartController {
             @RequestHeader(value = "X-Tenant-ID", required = true) final String tenantId,
             @RequestHeader(value = "X-User-ID", required = true) final String userId,
             @Valid @RequestBody final AddItemRequest request) {
-        CartResponse cart = cartService.addItemToCart(tenantId, userId, request);
+        final CartResponse cart = cartService.addItemToCart(tenantId, userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(cart);
     }
 
@@ -87,7 +87,7 @@ public class CartController {
             @RequestHeader(value = "X-User-ID", required = true) final String userId,
             @PathVariable final String productId,
             @Valid @RequestBody final UpdateQuantityRequest request) {
-        CartResponse cart = cartService.updateItemQuantity(tenantId, userId, productId, request);
+        final CartResponse cart = cartService.updateItemQuantity(tenantId, userId, productId, request);
         return ResponseEntity.ok(cart);
     }
 
@@ -104,7 +104,7 @@ public class CartController {
             @RequestHeader(value = "X-Tenant-ID", required = true) final String tenantId,
             @RequestHeader(value = "X-User-ID", required = true) final String userId,
             @PathVariable final String productId) {
-        CartResponse cart = cartService.removeItemFromCart(tenantId, userId, productId);
+        final CartResponse cart = cartService.removeItemFromCart(tenantId, userId, productId);
         return ResponseEntity.ok(cart);
     }
 
