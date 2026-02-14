@@ -122,4 +122,26 @@ public class CartItem {
             this.subtotal = price.multiply(new BigDecimal(quantity));
         }
     }
+
+    /**
+     * Gets the cart reference.
+     * Since cart is lazy-loaded and marked with @JsonIgnore,
+     * direct access is used without defensive copying.
+     *
+     * @return the cart
+     */
+    @Override
+    public String toString() {
+        return "CartItem{" +
+                "itemId='" + itemId + '\'' +
+                ", productId='" + productId + '\'' +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", subtotal=" + subtotal +
+                ", isDeleted=" + isDeleted +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }
