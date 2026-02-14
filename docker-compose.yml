@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: stormgate-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root@1234}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-cart_db}
+      MYSQL_USER: ${MYSQL_USER:-cartuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-cartpass@1234}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - stormgate-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+    restart: unless-stopped
+
+  # Cart Service
+  cart-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stormgate-cart-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-cart_db}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-cartuser}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-cartpass@1234}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_APPLICATION_NAME: stormgate-cart-service
+      SERVER_PORT: 8080
+    ports:
+      - "${SERVICE_PORT:-8080}:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - stormgate-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/api/cart/health" ]
+      timeout: 10s
+      retries: 5
+      interval: 30s
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  stormgate-network:
+    driver: bridge
